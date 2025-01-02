@@ -1,0 +1,906 @@
+{
+ "cells": [
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "id": "b2ae2345-e430-4d80-aaa2-d9927a564dcd",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import numpy as np\n",
+    "import pandas as pd"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "id": "355dbcb9-d042-42c2-83fb-6a6cd3bc16af",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "df = pd.read_csv('TMDB_movie_dataset.csv')"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "id": "64321447-d807-4b1f-bd0d-803fc767fe21",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>id</th>\n",
+       "      <th>title</th>\n",
+       "      <th>vote_average</th>\n",
+       "      <th>vote_count</th>\n",
+       "      <th>status</th>\n",
+       "      <th>release_date</th>\n",
+       "      <th>revenue</th>\n",
+       "      <th>runtime</th>\n",
+       "      <th>adult</th>\n",
+       "      <th>backdrop_path</th>\n",
+       "      <th>...</th>\n",
+       "      <th>original_title</th>\n",
+       "      <th>overview</th>\n",
+       "      <th>popularity</th>\n",
+       "      <th>poster_path</th>\n",
+       "      <th>tagline</th>\n",
+       "      <th>genres</th>\n",
+       "      <th>production_companies</th>\n",
+       "      <th>production_countries</th>\n",
+       "      <th>spoken_languages</th>\n",
+       "      <th>keywords</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>27205</td>\n",
+       "      <td>Inception</td>\n",
+       "      <td>8.364</td>\n",
+       "      <td>34495</td>\n",
+       "      <td>Released</td>\n",
+       "      <td>2010-07-15</td>\n",
+       "      <td>825532764</td>\n",
+       "      <td>148</td>\n",
+       "      <td>False</td>\n",
+       "      <td>/8ZTVqvKDQ8emSGUEMjsS4yHAwrp.jpg</td>\n",
+       "      <td>...</td>\n",
+       "      <td>Inception</td>\n",
+       "      <td>Cobb, a skilled thief who commits corporate es...</td>\n",
+       "      <td>83.952</td>\n",
+       "      <td>/oYuLEt3zVCKq57qu2F8dT7NIa6f.jpg</td>\n",
+       "      <td>Your mind is the scene of the crime.</td>\n",
+       "      <td>Action, Science Fiction, Adventure</td>\n",
+       "      <td>Legendary Pictures, Syncopy, Warner Bros. Pict...</td>\n",
+       "      <td>United Kingdom, United States of America</td>\n",
+       "      <td>English, French, Japanese, Swahili</td>\n",
+       "      <td>rescue, mission, dream, airplane, paris, franc...</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "<p>1 rows × 24 columns</p>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "      id      title  vote_average  vote_count    status release_date  \\\n",
+       "0  27205  Inception         8.364       34495  Released   2010-07-15   \n",
+       "\n",
+       "     revenue  runtime  adult                     backdrop_path  ...  \\\n",
+       "0  825532764      148  False  /8ZTVqvKDQ8emSGUEMjsS4yHAwrp.jpg  ...   \n",
+       "\n",
+       "   original_title                                           overview  \\\n",
+       "0       Inception  Cobb, a skilled thief who commits corporate es...   \n",
+       "\n",
+       "  popularity                       poster_path  \\\n",
+       "0     83.952  /oYuLEt3zVCKq57qu2F8dT7NIa6f.jpg   \n",
+       "\n",
+       "                                tagline                              genres  \\\n",
+       "0  Your mind is the scene of the crime.  Action, Science Fiction, Adventure   \n",
+       "\n",
+       "                                production_companies  \\\n",
+       "0  Legendary Pictures, Syncopy, Warner Bros. Pict...   \n",
+       "\n",
+       "                       production_countries  \\\n",
+       "0  United Kingdom, United States of America   \n",
+       "\n",
+       "                     spoken_languages  \\\n",
+       "0  English, French, Japanese, Swahili   \n",
+       "\n",
+       "                                            keywords  \n",
+       "0  rescue, mission, dream, airplane, paris, franc...  \n",
+       "\n",
+       "[1 rows x 24 columns]"
+      ]
+     },
+     "execution_count": 3,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "df.head(1)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "id": "e33ed29d-59ca-43cd-93c4-5d948727dc50",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "Index(['id', 'title', 'vote_average', 'vote_count', 'status', 'release_date',\n",
+       "       'revenue', 'runtime', 'adult', 'backdrop_path', 'budget', 'homepage',\n",
+       "       'imdb_id', 'original_language', 'original_title', 'overview',\n",
+       "       'popularity', 'poster_path', 'tagline', 'genres',\n",
+       "       'production_companies', 'production_countries', 'spoken_languages',\n",
+       "       'keywords'],\n",
+       "      dtype='object')"
+      ]
+     },
+     "execution_count": 4,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "df.columns"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 5,
+   "id": "18b3df08-7e2a-4a22-b3a3-9238a6daaa40",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "<class 'pandas.core.frame.DataFrame'>\n",
+      "RangeIndex: 1154375 entries, 0 to 1154374\n",
+      "Data columns (total 24 columns):\n",
+      " #   Column                Non-Null Count    Dtype  \n",
+      "---  ------                --------------    -----  \n",
+      " 0   id                    1154375 non-null  int64  \n",
+      " 1   title                 1154362 non-null  object \n",
+      " 2   vote_average          1154375 non-null  float64\n",
+      " 3   vote_count            1154375 non-null  int64  \n",
+      " 4   status                1154375 non-null  object \n",
+      " 5   release_date          959764 non-null   object \n",
+      " 6   revenue               1154375 non-null  int64  \n",
+      " 7   runtime               1154375 non-null  int64  \n",
+      " 8   adult                 1154375 non-null  bool   \n",
+      " 9   backdrop_path         304859 non-null   object \n",
+      " 10  budget                1154375 non-null  int64  \n",
+      " 11  homepage              121916 non-null   object \n",
+      " 12  imdb_id               607005 non-null   object \n",
+      " 13  original_language     1154375 non-null  object \n",
+      " 14  original_title        1154362 non-null  object \n",
+      " 15  overview              917579 non-null   object \n",
+      " 16  popularity            1154375 non-null  float64\n",
+      " 17  poster_path           786434 non-null   object \n",
+      " 18  tagline               161861 non-null   object \n",
+      " 19  genres                688486 non-null   object \n",
+      " 20  production_companies  519004 non-null   object \n",
+      " 21  production_countries  639240 non-null   object \n",
+      " 22  spoken_languages      659215 non-null   object \n",
+      " 23  keywords              310707 non-null   object \n",
+      "dtypes: bool(1), float64(2), int64(5), object(16)\n",
+      "memory usage: 203.7+ MB\n"
+     ]
+    }
+   ],
+   "source": [
+    "df.info()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 6,
+   "id": "e48c87a5-81ec-42f0-9926-ce8975c101b8",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "#id\n",
+    "#imdb_id\n",
+    "#title\n",
+    "#overview\n",
+    "#genres\n",
+    "#keywords"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 7,
+   "id": "c8f9105c-6818-4133-93d5-7c6be6ccfd9e",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "df = df[['id','title','overview','genres','keywords']]"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 8,
+   "id": "e9ace02f-0f4b-4e77-aa6b-43b83aed9da4",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>id</th>\n",
+       "      <th>title</th>\n",
+       "      <th>overview</th>\n",
+       "      <th>genres</th>\n",
+       "      <th>keywords</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>27205</td>\n",
+       "      <td>Inception</td>\n",
+       "      <td>Cobb, a skilled thief who commits corporate es...</td>\n",
+       "      <td>Action, Science Fiction, Adventure</td>\n",
+       "      <td>rescue, mission, dream, airplane, paris, franc...</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>157336</td>\n",
+       "      <td>Interstellar</td>\n",
+       "      <td>The adventures of a group of explorers who mak...</td>\n",
+       "      <td>Adventure, Drama, Science Fiction</td>\n",
+       "      <td>rescue, future, spacecraft, race against time,...</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>155</td>\n",
+       "      <td>The Dark Knight</td>\n",
+       "      <td>Batman raises the stakes in his war on crime. ...</td>\n",
+       "      <td>Drama, Action, Crime, Thriller</td>\n",
+       "      <td>joker, sadism, chaos, secret identity, crime f...</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>19995</td>\n",
+       "      <td>Avatar</td>\n",
+       "      <td>In the 22nd century, a paraplegic Marine is di...</td>\n",
+       "      <td>Action, Adventure, Fantasy, Science Fiction</td>\n",
+       "      <td>future, society, culture clash, space travel, ...</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4</th>\n",
+       "      <td>24428</td>\n",
+       "      <td>The Avengers</td>\n",
+       "      <td>When an unexpected enemy emerges and threatens...</td>\n",
+       "      <td>Science Fiction, Action, Adventure</td>\n",
+       "      <td>new york city, superhero, shield, based on com...</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "       id            title                                           overview  \\\n",
+       "0   27205        Inception  Cobb, a skilled thief who commits corporate es...   \n",
+       "1  157336     Interstellar  The adventures of a group of explorers who mak...   \n",
+       "2     155  The Dark Knight  Batman raises the stakes in his war on crime. ...   \n",
+       "3   19995           Avatar  In the 22nd century, a paraplegic Marine is di...   \n",
+       "4   24428     The Avengers  When an unexpected enemy emerges and threatens...   \n",
+       "\n",
+       "                                        genres  \\\n",
+       "0           Action, Science Fiction, Adventure   \n",
+       "1            Adventure, Drama, Science Fiction   \n",
+       "2               Drama, Action, Crime, Thriller   \n",
+       "3  Action, Adventure, Fantasy, Science Fiction   \n",
+       "4           Science Fiction, Action, Adventure   \n",
+       "\n",
+       "                                            keywords  \n",
+       "0  rescue, mission, dream, airplane, paris, franc...  \n",
+       "1  rescue, future, spacecraft, race against time,...  \n",
+       "2  joker, sadism, chaos, secret identity, crime f...  \n",
+       "3  future, society, culture clash, space travel, ...  \n",
+       "4  new york city, superhero, shield, based on com...  "
+      ]
+     },
+     "execution_count": 8,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "df.head()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 9,
+   "id": "92132d66-32bd-4d3b-a35e-3df877b77d3b",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "id               0\n",
+       "title           13\n",
+       "overview    236796\n",
+       "genres      465889\n",
+       "keywords    843668\n",
+       "dtype: int64"
+      ]
+     },
+     "execution_count": 9,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "df.isnull().sum()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 10,
+   "id": "1b49e1a4-1a13-4d43-bdef-6dbaefae0b2b",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "df = df.dropna(subset=['title'])"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 11,
+   "id": "8af6046c-1b57-47e0-b390-41adaca30665",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "df = df.dropna(subset=['overview', 'genres', 'keywords'])"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 12,
+   "id": "0d65f4ae-83be-4a95-91e9-d0d01a59a0bc",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "(226930, 5)"
+      ]
+     },
+     "execution_count": 12,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "df.shape"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 13,
+   "id": "1cf344f9-31a5-46e1-b099-0677d07949e6",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "'rescue, mission, dream, airplane, paris, france, virtual reality, kidnapping, philosophy, spy, allegory, manipulation, car crash, heist, memory, architecture, los angeles, california, dream world, subconscious'"
+      ]
+     },
+     "execution_count": 13,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "df['keywords'][0]"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 14,
+   "id": "b3df7de1-c76a-43a7-abee-db2d2f647176",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "def convert_to_word_list(input_string):\n",
+    "    return [word.strip() for word in input_string.split(',')]"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 15,
+   "id": "3aed5e85-85af-47a7-80d2-87f186447583",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "def convert_to_list(input_string):\n",
+    "    return [word.strip() for word in input_string.split(' ')]"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 16,
+   "id": "3de06a81-3ae7-4d88-bce0-e52309696707",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "df['keywords'] = df['keywords'].apply(convert_to_word_list)\n",
+    "df['overview'] = df['overview'].apply(convert_to_list)\n",
+    "df['genres'] = df['genres'].apply(convert_to_word_list)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 17,
+   "id": "bfb9e7e1-a686-4c05-a2d6-77c2d79b0f65",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "df['genres'] = df['genres'].apply(lambda x:[i.replace(\" \",\"\") for i in x])\n",
+    "df['keywords'] = df['keywords'].apply(lambda x:[i.replace(\" \",\"\") for i in x])\n",
+    "df['overview'] = df['overview'].apply(lambda x:[i.replace(\" \",\"\") for i in x])"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 18,
+   "id": "b1c6e410-9175-4804-a23b-55943b17a6af",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "df['tags'] = df['overview'] + df['keywords'] + df['genres']"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 19,
+   "id": "aa73426b-d6d5-4648-be62-1d4bcd5441e1",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>id</th>\n",
+       "      <th>title</th>\n",
+       "      <th>overview</th>\n",
+       "      <th>genres</th>\n",
+       "      <th>keywords</th>\n",
+       "      <th>tags</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>27205</td>\n",
+       "      <td>Inception</td>\n",
+       "      <td>[Cobb,, a, skilled, thief, who, commits, corpo...</td>\n",
+       "      <td>[Action, ScienceFiction, Adventure]</td>\n",
+       "      <td>[rescue, mission, dream, airplane, paris, fran...</td>\n",
+       "      <td>[Cobb,, a, skilled, thief, who, commits, corpo...</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>157336</td>\n",
+       "      <td>Interstellar</td>\n",
+       "      <td>[The, adventures, of, a, group, of, explorers,...</td>\n",
+       "      <td>[Adventure, Drama, ScienceFiction]</td>\n",
+       "      <td>[rescue, future, spacecraft, raceagainsttime, ...</td>\n",
+       "      <td>[The, adventures, of, a, group, of, explorers,...</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>155</td>\n",
+       "      <td>The Dark Knight</td>\n",
+       "      <td>[Batman, raises, the, stakes, in, his, war, on...</td>\n",
+       "      <td>[Drama, Action, Crime, Thriller]</td>\n",
+       "      <td>[joker, sadism, chaos, secretidentity, crimefi...</td>\n",
+       "      <td>[Batman, raises, the, stakes, in, his, war, on...</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>19995</td>\n",
+       "      <td>Avatar</td>\n",
+       "      <td>[In, the, 22nd, century,, a, paraplegic, Marin...</td>\n",
+       "      <td>[Action, Adventure, Fantasy, ScienceFiction]</td>\n",
+       "      <td>[future, society, cultureclash, spacetravel, s...</td>\n",
+       "      <td>[In, the, 22nd, century,, a, paraplegic, Marin...</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4</th>\n",
+       "      <td>24428</td>\n",
+       "      <td>The Avengers</td>\n",
+       "      <td>[When, an, unexpected, enemy, emerges, and, th...</td>\n",
+       "      <td>[ScienceFiction, Action, Adventure]</td>\n",
+       "      <td>[newyorkcity, superhero, shield, basedoncomic,...</td>\n",
+       "      <td>[When, an, unexpected, enemy, emerges, and, th...</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "       id            title                                           overview  \\\n",
+       "0   27205        Inception  [Cobb,, a, skilled, thief, who, commits, corpo...   \n",
+       "1  157336     Interstellar  [The, adventures, of, a, group, of, explorers,...   \n",
+       "2     155  The Dark Knight  [Batman, raises, the, stakes, in, his, war, on...   \n",
+       "3   19995           Avatar  [In, the, 22nd, century,, a, paraplegic, Marin...   \n",
+       "4   24428     The Avengers  [When, an, unexpected, enemy, emerges, and, th...   \n",
+       "\n",
+       "                                         genres  \\\n",
+       "0           [Action, ScienceFiction, Adventure]   \n",
+       "1            [Adventure, Drama, ScienceFiction]   \n",
+       "2              [Drama, Action, Crime, Thriller]   \n",
+       "3  [Action, Adventure, Fantasy, ScienceFiction]   \n",
+       "4           [ScienceFiction, Action, Adventure]   \n",
+       "\n",
+       "                                            keywords  \\\n",
+       "0  [rescue, mission, dream, airplane, paris, fran...   \n",
+       "1  [rescue, future, spacecraft, raceagainsttime, ...   \n",
+       "2  [joker, sadism, chaos, secretidentity, crimefi...   \n",
+       "3  [future, society, cultureclash, spacetravel, s...   \n",
+       "4  [newyorkcity, superhero, shield, basedoncomic,...   \n",
+       "\n",
+       "                                                tags  \n",
+       "0  [Cobb,, a, skilled, thief, who, commits, corpo...  \n",
+       "1  [The, adventures, of, a, group, of, explorers,...  \n",
+       "2  [Batman, raises, the, stakes, in, his, war, on...  \n",
+       "3  [In, the, 22nd, century,, a, paraplegic, Marin...  \n",
+       "4  [When, an, unexpected, enemy, emerges, and, th...  "
+      ]
+     },
+     "execution_count": 19,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "df.head()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 20,
+   "id": "a6f4ebf5-25a6-4cba-b3fd-591871d173d3",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "new_df = df[['id','title','tags']]"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 21,
+   "id": "1ace97fa-4bf0-4021-b6b6-d17df0420fc8",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "df['tags'] = df['tags'].apply(lambda x: \" \".join(x).lower() if isinstance(x, list) else x.lower())"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 22,
+   "id": "2d19638f-aae7-4f48-9697-cb96c8518f7c",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>id</th>\n",
+       "      <th>title</th>\n",
+       "      <th>tags</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>27205</td>\n",
+       "      <td>Inception</td>\n",
+       "      <td>[Cobb,, a, skilled, thief, who, commits, corpo...</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>157336</td>\n",
+       "      <td>Interstellar</td>\n",
+       "      <td>[The, adventures, of, a, group, of, explorers,...</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>155</td>\n",
+       "      <td>The Dark Knight</td>\n",
+       "      <td>[Batman, raises, the, stakes, in, his, war, on...</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>19995</td>\n",
+       "      <td>Avatar</td>\n",
+       "      <td>[In, the, 22nd, century,, a, paraplegic, Marin...</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4</th>\n",
+       "      <td>24428</td>\n",
+       "      <td>The Avengers</td>\n",
+       "      <td>[When, an, unexpected, enemy, emerges, and, th...</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "       id            title                                               tags\n",
+       "0   27205        Inception  [Cobb,, a, skilled, thief, who, commits, corpo...\n",
+       "1  157336     Interstellar  [The, adventures, of, a, group, of, explorers,...\n",
+       "2     155  The Dark Knight  [Batman, raises, the, stakes, in, his, war, on...\n",
+       "3   19995           Avatar  [In, the, 22nd, century,, a, paraplegic, Marin...\n",
+       "4   24428     The Avengers  [When, an, unexpected, enemy, emerges, and, th..."
+      ]
+     },
+     "execution_count": 22,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "new_df.head()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 23,
+   "id": "ca41dbc1-e1df-43c7-99ff-422d6fae08fd",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "(226930, 3)"
+      ]
+     },
+     "execution_count": 23,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "new_df.shape"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 24,
+   "id": "dffbb838-1930-4c0c-9e44-ea4dd8546c0d",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import nltk"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 25,
+   "id": "97bbd08e-a312-4595-b337-678847b1bf94",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "from nltk.stem.porter import PorterStemmer"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 26,
+   "id": "59a160a0-8964-4d24-9648-f545489f6672",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "stemmer = PorterStemmer()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 27,
+   "id": "847b8506-233c-4f54-996c-7d1a0a99a268",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "def stem(text):\n",
+    "    if isinstance(text, list):\n",
+    "        words = text\n",
+    "    else:\n",
+    "        words = text.split()\n",
+    "    \n",
+    "    y = []\n",
+    "    for i in words:\n",
+    "        y.append(stemmer.stem(i))\n",
+    "    return \" \".join(y)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 28,
+   "id": "c154d767-9ec2-43ee-9689-ac4d6d9f4df6",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "C:\\Users\\lathi\\AppData\\Local\\Temp\\ipykernel_16096\\1551369332.py:1: SettingWithCopyWarning: \n",
+      "A value is trying to be set on a copy of a slice from a DataFrame.\n",
+      "Try using .loc[row_indexer,col_indexer] = value instead\n",
+      "\n",
+      "See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy\n",
+      "  new_df['tags']  = new_df['tags'].apply(stem)\n"
+     ]
+    }
+   ],
+   "source": [
+    "new_df['tags']  = new_df['tags'].apply(stem)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 29,
+   "id": "549da272-734e-4baf-9b57-d727c8f8074c",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "from sklearn.feature_extraction.text import CountVectorizer\n",
+    "cv = CountVectorizer(max_features=5000, stop_words='english')"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 30,
+   "id": "3f0cd0d1-1466-4ea7-b5e6-115ed87fc275",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "vectors = cv.fit_transform(df['tags']).toarray()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 34,
+   "id": "ddfb8234-ab21-4573-8c7f-41a63a6df76b",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "from sklearn.metrics.pairwise import cosine_similarity\n",
+    "from scipy.sparse import lil_matrix"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "800be67c-2c52-48ad-8cf3-df44b2f0f6bd",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "num_batches = 20\n",
+    "batch_size = len(vectors) // num_batches\n",
+    "\n",
+    "similarity_matrix = lil_matrix((len(vectors), len(vectors)))\n",
+    "\n",
+    "for i in range(num_batches):\n",
+    "    start_idx = i * batch_size\n",
+    "    end_idx = (i + 1) * batch_size if i < num_batches - 1 else len(vectors)\n",
+    "\n",
+    "    batch = vectors[start_idx:end_idx]\n",
+    "    batch_similarity = cosine_similarity(batch, vectors)\n",
+    "\n",
+    "    similarity_matrix[start_idx:end_idx, :] = batch_similarity\n",
+    "similarity_matrix_dense = similarity_matrix.toarray()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "6a76d9f1-6c14-4982-99e8-ce15c9a6c66d",
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3 (ipykernel)",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.12.7"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}
