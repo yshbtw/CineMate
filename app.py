@@ -2,14 +2,12 @@ import pickle
 import streamlit as st
 import requests
 
-# Set page configuration
 st.set_page_config(
     page_title="CineMate - Movie Recommendations",
     page_icon="🎬",
     layout="wide"
 )
 
-# Custom CSS
 st.markdown("""
 <style>
     .main {
@@ -89,7 +87,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 def fetch_poster(movie_id):
-    api_key = "29ad6a51724de2c06c2cc506c5038855"
+    api_key = "Your Tmdb API Key"
     url = f"https://api.themoviedb.org/3/movie/{movie_id}?api_key={api_key}&language=en-US"
     try:
         with st.spinner('🎬 Fetching movie poster...'):
@@ -145,7 +143,6 @@ with col2:
                         st.image(poster, use_container_width=True)
                     st.markdown('</div>', unsafe_allow_html=True)
 
-# Footer
 st.markdown("""
 <div style='text-align: center; color: white; padding: 2rem;'>
     Made with ❤️ by CineMate Team
